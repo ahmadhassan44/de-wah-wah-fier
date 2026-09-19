@@ -1,0 +1,26 @@
+[project]
+name = "sam-env"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Ahmad Hassan", email = "ahmad.tanveer@ccript.com" }
+]
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "huggingface-hub<1.0",
+    "sam-audio",
+]
+
+[project.scripts]
+sam-env = "sam_env:main"
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+# decord and xformers are only for video prompts and has no macOS arm64 wheel
+override-dependencies = ["decord ; sys_platform == 'never'", "xformers ; sys_platform == 'never'"]
+
+[tool.uv.sources]
+sam-audio = { git = "https://github.com/facebookresearch/sam-audio" }

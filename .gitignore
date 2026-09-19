@@ -1,0 +1,13 @@
+# audio and outputs (copyrighted recordings, large)
+work/
+listen/
+mp3s/
+logs/
+
+# environments and model weights
+.venv/
+envs/*/.venv/
+envs/*/checkpoints/
+
+.DS_Store
+__pycache__/
