@@ -24,7 +24,12 @@ the line.
 | 4 | pyannote, duck (−12 / −20 dB) instead of mute | partly | **yes** | Rejected by listening |
 | 5 | SAM Audio large, text + span anchors | yes (median −41 dB) | **yes**: random whole-chunk dropouts | Rejected |
 | 6 | #5 + per-chunk retry | yes (median −23 dB) | **yes**: anchors turn SAM into a gate | Rejected by listening |
-| 7 | **SAM text-only in audience turns, original elsewhere** | median −24 dB | measured 0.8 s of 51 s | **Current candidate, awaiting listening** |
+| 7 | SAM text-only in audience turns, original elsewhere | median −24 dB | measured 0.8 s of 51 s, **still cut off by ear** | Rejected by listening: cut off, and wah wah / *kya baat hai* still audible |
+
+**After 7 approaches, no off-the-shelf combination passes a listening test.**
+Every pipeline that relies on diarization to decide *where* to act inherits its
+boundary errors, and the general-purpose separators either don't separate a
+crowd (MossFormer2) or do so unreliably (SAM text-only).
 
 The core difficulty: audience reactions **overlap** the poet in time. Any
 method that decides *which moments to keep* (gating, ducking) must either keep
@@ -179,7 +184,7 @@ Two bugs found in the first version of the check:
 
 ---
 
-## Approach 7 (current): SAM text-only, original elsewhere (`experiments/composite.py`)
+## Approach 7: SAM text-only, original elsewhere (`experiments/composite.py`)
 
 Key observation: **without anchors SAM genuinely separates.** At 0:11.8 the input
 is dominated by a man (122 Hz); the text-only output has her voice (339 Hz) at
@@ -198,9 +203,13 @@ is the original); detector says 0.8 s of her voice lost (0:09.7, 0:14.2,
 1:31.6). Two audience turns are left nearly untouched (0:28, 1:02); these are
 the ones where listening said her voice is present.
 
-**Status: awaiting listening.** Known risk: this still depends on pyannote to
-decide *where* to use separation. Audience speech that pyannote labels as
-"poet" (exclamations over her) is taken from the original and survives.
+**Listening verdict: rejected.** She is still cut off, and the audience (*wah
+wah*, *kya baat hai*) is still audible. As expected from the design, it still
+depends on pyannote to decide *where* to separate: exclamations that pyannote
+labels as "poet" come straight from the original, and inside audience turns
+SAM only reduced the crowd by 12–20 dB in several places, which is audible.
+The scorecard again said "nearly fixed" (0.8 s lost), a second confirmation
+that it cannot be trusted for cut-offs.
 
 ---
 
